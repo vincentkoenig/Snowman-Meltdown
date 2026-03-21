@@ -9,6 +9,7 @@ def get_random_word():
 
 def display_game_state(mistakes, secret_word, guessed_letters):
     # Display the snowman stage for the current number of mistakes.
+    print("\n" + "-" * 30)
     print(STAGES[mistakes])
 
     # Build a display version of the secret word.
@@ -19,8 +20,10 @@ def display_game_state(mistakes, secret_word, guessed_letters):
         else:
             display_word += "_ "
 
-    print("Word: ", display_word)
-    print("\n")
+    print("Word:", display_word.strip())
+    print(f"Mistakes: {mistakes}/{len(STAGES) - 1}")
+    print("Guessed letters:", ", ".join(guessed_letters))
+    print("-" * 30 + "\n")
 
 
 def play_game():
@@ -29,26 +32,35 @@ def play_game():
     mistakes = 0
 
     print("Welcome to Snowman Meltdown!")
+    display_game_state(mistakes, secret_word, guessed_letters)
 
     while True:
         guess = input("Guess a letter: ").lower()
 
+        # Input Validation
+        if len(guess) != 1 or not guess.isalpha():
+            print("Please enter a single letter.")
+            continue
+
+        # Double guess
         if guess in guessed_letters:
             print("You already guessed that letter!")
             continue
 
-        if guess in secret_word:
-            guessed_letters.append(guess)
-        else:
+        guessed_letters.append(guess)
+
+        # Mistakes
+        if guess not in secret_word:
             mistakes += 1
-            print(f"Mistakes: {mistakes}")
 
         display_game_state(mistakes, secret_word, guessed_letters)
 
+        # Win
         if all(letter in guessed_letters for letter in secret_word):
             print("You saved the snowman!")
             break
 
+        # Lose
         if mistakes >= len(STAGES) - 1:
             print("The snowman melted!")
             print("The word was:", secret_word)
@@ -56,4 +68,10 @@ def play_game():
 
 
 if __name__ == "__main__":
-    play_game()
+    while True:
+        play_game()
+
+        again = input("Play again? (y/n): ").lower()
+        if again != "y":
+            print("Thanks for playing!")
+            break
