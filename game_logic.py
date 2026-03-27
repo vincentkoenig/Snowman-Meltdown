@@ -1,5 +1,5 @@
 from ascii_art import STAGES
-from snowman import WORDS
+from words import WORDS
 import random
 
 def get_random_word():
@@ -7,7 +7,7 @@ def get_random_word():
     return WORDS[random.randint(0, len(WORDS) - 1)]
 
 
-def display_game_state(mistakes, secret_word, guessed_letters):
+def display_game_state(mistakes, secret_word, all_guesses):
     # Display the snowman stage for the current number of mistakes.
     print("\n" + "-" * 30)
     print(STAGES[mistakes])
@@ -15,24 +15,24 @@ def display_game_state(mistakes, secret_word, guessed_letters):
     # Build a display version of the secret word.
     display_word = ""
     for letter in secret_word:
-        if letter in guessed_letters:
+        if letter in all_guesses:
             display_word += letter + " "
         else:
             display_word += "_ "
 
     print("Word:", display_word.strip())
     print(f"Mistakes: {mistakes}/{len(STAGES) - 1}")
-    print("Guessed letters:", ", ".join(guessed_letters))
+    print("Guessed letters:", ", ".join(all_guesses))
     print("-" * 30 + "\n")
 
 
 def play_game():
     secret_word = get_random_word()
-    guessed_letters = []
+    all_guesses = []
     mistakes = 0
 
     print("Welcome to Snowman Meltdown!")
-    display_game_state(mistakes, secret_word, guessed_letters)
+    display_game_state(mistakes, secret_word, all_guesses)
 
     while True:
         guess = input("Guess a letter: ").lower()
@@ -43,20 +43,20 @@ def play_game():
             continue
 
         # Double guess
-        if guess in guessed_letters:
+        if guess in all_guesses:
             print("You already guessed that letter!")
             continue
 
-        guessed_letters.append(guess)
+        all_guesses.append(guess)
 
         # Mistakes
         if guess not in secret_word:
             mistakes += 1
 
-        display_game_state(mistakes, secret_word, guessed_letters)
+        display_game_state(mistakes, secret_word, all_guesses)
 
         # Win
-        if all(letter in guessed_letters for letter in secret_word):
+        if all(letter in all_guesses for letter in secret_word):
             print("You saved the snowman!")
             break
 
@@ -64,14 +64,4 @@ def play_game():
         if mistakes >= len(STAGES) - 1:
             print("The snowman melted!")
             print("The word was:", secret_word)
-            break
-
-
-if __name__ == "__main__":
-    while True:
-        play_game()
-
-        again = input("Play again? (y/n): ").lower()
-        if again != "y":
-            print("Thanks for playing!")
             break
